@@ -24,38 +24,56 @@
 
 > "It’s dangerous to go alone, take this!" - Old Man from *The Legend of Zelda*
 
-Video games are an integral part of modern entertainment and culture nowadays, with a market size of over $274 billion dollars calculated in 2024[^1]. With the rapid advancement of technology, the demand for high-quality graphics and immersive experiences in newer video games has increased significantly. To meet this demand, game developers are constantly pushing the boundaries of graphics and visual fidelity in actual hardware. High-resolution textures and assets are essential for creating realistic environments and characters that enhance the overall gaming experience. As a result, the video game industry is witnessing a growing trend towards higher resolutions, with many games now supporting 2K, 4K and even 8K resolutions[^2].
+Video games are an integral part of modern entertainment and culture nowadays, with a market size of over $274 billion dollars calculated in 2024[1]. With the rapid advancement of technology, the demand for high-quality graphics and immersive experiences in newer video games has increased significantly. To meet this demand, game developers are constantly pushing the boundaries of graphics and visual fidelity in actual hardware. High-resolution textures and assets are essential for creating realistic environments and characters that enhance the overall gaming experience. As a result, the video game industry is witnessing a growing trend towards higher resolutions, with many games now supporting 2K, 4K and even 8K resolutions[2].
 
-However, the development of high-resolution textures and assets can be time-consuming and resource-intensive. Graphic processing units (GPUs) and other hardware components must be capable of rendering these high-resolution assets in real-time, multiple frames per second (FPS). This can be a significant challenge, especially while textures and assets are evolving in a faster pace than hardware capabilities[^3].
+However, the development of high-resolution textures and assets can be time-consuming and resource-intensive. Graphic processing units (GPUs) and other hardware components must be capable of rendering these high-resolution assets in real-time, multiple frames per second (FPS). This can be a significant challenge, especially while textures and assets are evolving in a faster pace than hardware capabilities[3].
 
 ### 1.1. Super Resolution
 
-This is where super resolution techniques come into play, particularly those leveraging deep learning methods. Super resolution[^4] refers to the process of enhancing the resolution of images or videos, allowing for the generation of high-quality visuals from lower-resolution sources. Using those techniques, graphic assets can be rendered at lower resolutions and then upscaled to higher resolutions without losing significant detail or quality. This is particularly useful in the gaming industry, where real-time rendering is crucial for maintaining a smooth and immersive experience.
+This is where super resolution techniques come into play, particularly those leveraging deep learning methods. Super resolution[4] refers to the process of enhancing the resolution of images or videos, allowing for the generation of high-quality visuals from lower-resolution sources. Using those techniques, graphic assets can be rendered at lower resolutions and then upscaled to higher resolutions without losing significant detail or quality. This is particularly useful in the gaming industry, where real-time rendering is crucial for maintaining a smooth and immersive experience.
 
-Two major players on the graphics market, NVIDIA and AMD, have already implemented super resolution techniques in their graphics cards. NVIDIA's Deep Learning Super Sampling (DLSS)[^5] and AMD's FidelityFX Super Resolution (FSR)[^6] are examples of how these companies are leveraging deep learning to enhance the gaming experience. DLSS technologies are locked behind their respective hardware, which means that they are not available for all users, while FidelityFX is open to other vendors and even has its own SDK. This has led to a growing interest in exploring and developing super resolution techniques that can be applied to video games, particularly those that are not limited to specific hardware.
+Two major players on the graphics market, NVIDIA and AMD, have already implemented super resolution techniques in their graphics cards. NVIDIA's Deep Learning Super Sampling (DLSS)[5] and AMD's FidelityFX Super Resolution (FSR)[6] are examples of how these companies are leveraging deep learning to enhance the gaming experience. DLSS technologies are locked behind their respective hardware, which means that they are not available for all users, while FidelityFX is open to other vendors and even has its own SDK. This has led to a growing interest in exploring and developing super resolution techniques that can be applied to video games, particularly those that are not limited to specific hardware.
 
 ### 1.2 Goal of the project
 
-The goal of this project will be to explore the current state of super resolution techniques in the video game industry, focusing on deep learning methods. Even with all of the advancements in the area, we do not have many public available datasets focused on Super Resolution for gaming content. To study this, we will leverage the Super Resolution Gaming Dataset, that was created by Evgenii Pishchik and is available on both GitHub[^7] and Kaggle[^8] platforms since last year. The dataset consists of multiple images in different resolutions generated by the Unreal Engine game engine. Some algorithms are already implemented in the dataset, so we will explore the performance of other algorithms and compare them with the existing ones.
+The goal of this project will be to explore the current state of super resolution techniques in the video game industry, focusing on deep learning methods. Even with all of the advancements in the area, we do not have many public available datasets focused on Super Resolution for gaming content. To study this, we will leverage the Super Resolution Gaming Dataset, that was created by Evgenii Pishchik and is available on both GitHub[7] and Kaggle[8] platforms since last year. The dataset consists of multiple images in different resolutions generated by the Unreal Engine game engine. Some algorithms are already implemented in the dataset, so we will explore the performance of other algorithms and compare them with the existing ones.
 
 ## 2. Related Work
 
 > "I used to be an adventurer like you, until I took an arrow to the knee." - Guard from *Skyrim*
 
+| Model | Architecture Type | Main Architectural Features  | Strengths | Weaknesses | Performance Metrics Reported (on SRGD) |
+|----|----|----|----|----|----|
+| SRCNN | CNN | 3 convolutional layers, initial bicubic upscaling | Pioneer, simple, established end-to-end learning for SR | Limited performance, blurs fine details | Not reported on SRGD |
+| EDSR         | CNN (Residual)    | Deep network, multiple residual blocks, no normalization, batch upscaling at the end | High performance, good detail reconstruction            | Computationally intensive                         | Not reported on SRGD                             |
+| SRGAN        | GAN               | Residual block generator, discriminator, perceptual loss (VGG) | Focus on perceptual quality, generates more realistic textures | May introduce artifacts                           | Not reported on SRGD                             |
+| ESRGAN       | GAN               | RRDB generator, RaGAN discriminator, improved perceptual loss (VGG pre-activation) | Superior perceptual quality compared to SRGAN, sharper and more natural textures | Computationally intensive                         | Not reported on SRGD                             |
+| Real-ESRGAN  | GAN               | Multi-scale discriminator, adversarial loss, focused on real-world degradations | Robust to real-world degradations, good for complex textures | Limited generalization across different image types | PSNR: 23.5409, SSIM: 0.7992, LPIPS: 0.3924       |
+| EMT          | Transformer       | MTB Blocks (Pixel Mixer + Self-Attention), striped window for SA | Good modeling of local and global dependencies, complexity-efficient | More recent, may require further investigation for specific applications | PSNR: 24.5443, SSIM: 0.8231, LPIPS: 0.3889       |
+| ResShift     | Diffusion Model   | Markov chain for HR-LR transition via residual shifting  | Efficient sampling steps, good balance between quality and efficiency | Relatively new approach to SR                     | PSNR: 23.0368, SSIM: 0.7992, LPIPS: 0.4829       |
+
+
+
 ## 3. Proposed Solution
 
 > "It's super effective!" - *Pokémon*
+
+Implement and evaluate different super resolution algorithms on the Super Resolution Gaming Dataset. The dataset contains images from various video games, including textures, environments, and characters, all rendered at different resolutions. The goal is to analyze the performance of existing algorithms and potentially develop a new one that can outperform the current state-of-the-art techniques.
 
 ## 4. Expected Benefits
 
 > "Praise the Sun!" - Solaire of Astora from *Dark Souls*
 
-- Guideline on how to use the dataset and its algorithms
+<!-- - Guideline on how to use the dataset and its algorithms
 - Comparison of the performance of different super resolution algorithms
 - Potentially, a new algorithm that can outperform the existing ones even if it is not the most efficient one or complex
 - Learning about the current state of super resolution techniques in the video game industry
 - Understanding the challenges and limitations of current super resolution techniques
 - Exploring the potential for future advancements in super resolution techniques
+
+Contributing to the open-source community by sharing the findings and potentially improving existing algorithms or developing new ones. -->
+
+The expected benefits of this project include providing a comprehensive guideline on how to utilize the Super Resolution Gaming Dataset and its associated algorithms, as well as offering a detailed comparison of the performance of various super resolution techniques. Additionally, the project aims to explore other algorithms in the literature that could surpass existing methods, even if it is not the most efficient or complex. By delving into the current state of super resolution techniques in the gaming industry, the project seeks to identify challenges and limitations while uncovering opportunities for future advancements. Furthermore, the findings and potential improvements to existing algorithms will be shared with the open-source community, contributing to the collective knowledge and fostering innovation in the field.
 
 ## 5. Conclusion
 
@@ -63,27 +81,24 @@ The goal of this project will be to explore the current state of super resolutio
 
 ## 6. References
 
-[^1]: Precedence Research: "Video Games Market Size, Share, and Trends 2025 to 2034", 31/01/2025. Available at https://www.precedenceresearch.com/video-game-market. Accessed on 30/03/2025.
+[1]: Precedence Research: "Video Games Market Size, Share, and Trends 2025 to 2034", 31/01/2025. Available at [Link](https://www.precedenceresearch.com/video-game-market). Accessed on 30/03/2025.
 
-[^2]: CTA - Consumer Technology Association: "8K Gets Bigger as Video Services Diversify", 17/11/2020. Available at: https://www.cta.tech/Resources/i3-Magazine/i3-Issues/2020/November-December/8K-Gets-Bigger-as-Video-Services-Diversify. Accessed on 30/03/2025.
+[2]: CTA - Consumer Technology Association: "8K Gets Bigger as Video Services Diversify", 17/11/2020. Available at: [Link](https://www.cta.tech/Resources/i3-Magazine/i3-Issues/2020/November-December/8K-Gets-Bigger-as-Video-Services-Diversify). Accessed on 30/03/2025.
 
-[^3]: TechRadar: "Playing Assassin's Creed Shadows at 8K with the Nvidia RTX 5090 was a nightmare - until I turned on Multi Frame Gen", 22/03/2025. Available at: https://www.techradar.com/computing/gaming-pcs/playing-assassins-creed-shadows-at-8k-with-the-nvidia-rtx-5090-was-a-nightmare-until-i-turned-on-multi-frame-gen. Accessed on 30/03/2025.
+[3]: TechRadar: "Playing Assassin's Creed Shadows at 8K with the Nvidia RTX 5090 was a nightmare - until I turned on Multi Frame Gen", 22/03/2025. Available at: [Link](https://www.techradar.com/computing/gaming-pcs/playing-assassins-creed-shadows-at-8k-with-the-nvidia-rtx-5090-was-a-nightmare-until-i-turned-on-multi-frame-gen). Accessed on 30/03/2025.
 
-[^4]: Wikipedia: "Super Resolution". Available at: https://en.wikipedia.org/wiki/Super-resolution_imaging. Accessed on 30/03/2025.
+[4]: Wikipedia: "Super Resolution". Available at: [Link](https://en.wikipedia.org/wiki/Super-resolution_imaging). Accessed on 30/03/2025.
 
-[^5]: NVIDIA: "Deep Learning Super Sampling (DLSS)". Available at: https://www.nvidia.com/pt-br/geforce/technologies/dlss/. Accessed on 30/03/2025.
+[5]: NVIDIA: "Deep Learning Super Sampling (DLSS)". Available at: [Link](https://www.nvidia.com/pt-br/geforce/technologies/dlss/). Accessed on 30/03/2025.
 
-[^6]: AMD: "AMD FidelityFX". Available at: https://www.amd.com/pt/products/graphics/technologies/fidelityfx.html. Accessed on 30/03/2025.
+[6]: AMD: "AMD FidelityFX". Available at: [Link](https://www.amd.com/pt/products/graphics/technologies/fidelityfx.html). Accessed on 30/03/2025.
 
-[^7]: GitHub: "Super Resolution Gaming Dataset (SRGD)". Available at: https://github.com/epishchik/SRGD. Accessed on 30/03/2025.
+[7]: GitHub: "Super Resolution Gaming Dataset (SRGD)". Available at: [Link](https://github.com/epishchik/SRGD). Accessed on 30/03/2025.
 
-[^8]: Kaggle: "Super Resolution in Video Games". Available at: https://www.kaggle.com/competitions/super-resolution-in-video-games. Accessed in 30/03/2025.
+[8]: Kaggle: "Super Resolution in Video Games". Available at: [Link](https://www.kaggle.com/competitions/super-resolution-in-video-games). Accessed in 30/03/2025.
 
-[^]:
+[]:
 
 ## Other resources used but not referenced
 
 - *Computerphile* YouTube channel: "Deep Learning Super Sampling". Available at: https://www.youtube.com/watch?v=_DPRt3AcUEY&ab_channel=Computerphile. Accessed on 30/03/2025.
-
-
-

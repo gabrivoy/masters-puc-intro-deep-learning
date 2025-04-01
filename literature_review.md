@@ -21,7 +21,15 @@
        - [2.2.2. Structural Similarity Index (SSIM)](#222-structural-similarity-index-ssim)
        - [2.2.3. Learned Perceptual Image Patch Similarity (LPIPS)](#223-learned-perceptual-image-patch-similarity-lpips)
 3. [Proposed Solution](#3-proposed-solution)
-   - [Hybrid Attention Transformer (HAT)](#hybrid-attention-transformer-hat)
+   - [3.1. Hybrid Attention Transformer (HAT)](#31-hybrid-attention-transformer-hat)
+   - [3.2. Understanding the architecture of the HAT](#32-understanding-the-architecture-of-the-hat)
+       - [3.2.1. Shallow Feature Extraction](#321-shallow-feature-extraction)
+       - [3.2.2. Deep Feature Extraction](#322-deep-feature-extraction)
+           - [Residual Hybrid Attention Group (RHAG)](#residual-hybrid-attention-group-rhag)
+           - [Hybrid Attention Block (HAB)](#hybrid-attention-block-hab)
+           - [Overlapping Cross-Attention Block (OCAB)](#overlapping-cross-attention-block-ocab)
+           - [Channel Attention Block (CAB)](#channel-attention-block-cab)
+       - [3.2.3. Image Reconstruction](#323-image-reconstruction)
 4. [Expected Benefits](#4-expected-benefits)
 5. [References](#5-references)
 
@@ -73,7 +81,7 @@ It is important to understand the metrics presented in the table. The most commo
 
 #### 2.2.1. Peak Signal-to-Noise Ratio (PSNR)
 
-PSNR measures the ratio between the maximum possible power of a signal and the power of corrupting noise and is calculated by[]:
+PSNR[16] measures the ratio between the maximum possible power of a signal and the power of corrupting noise and is calculated by:
 
 $$
 PSNR = 10 \cdot \log_{10} \left( \frac{MAX^2}{MSE} \right)
@@ -87,7 +95,7 @@ Where:
 
 #### 2.2.2. Structural Similarity Index (SSIM)
 
-SSIM assesses the similarity between two images based on luminance, contrast, and structure. It is calculated using the following formula[]:
+SSIM[17] assesses the similarity between two images based on luminance, contrast, and structure. It is calculated using the following formula[]:
 
 $$
 SSIM = \frac{(2\mu_x\mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu_x^2 + \mu_y^2 + C_1)(\sigma_x^2 + \sigma_y^2 + C_2)}
@@ -103,15 +111,64 @@ Where:
 
 #### 2.2.3. Learned Perceptual Image Patch Similarity (LPIPS)
 
-LPIPS is a perceptual metric that evaluates the similarity between two images based on deep features extracted from a pre-trained neural network. It is calculated using a model that is trained on a labeled dataset of human-judged perceptual similarity[]. A higher LPIPS score indicates lower perceptual similarity, while a lower score indicates higher perceptual similarity. The LPIPS metric is particularly useful for evaluating the quality of super-resolved images, as it aligns more closely with human perception compared to traditional metrics like PSNR and SSIM.
+LPIPS[18] is a perceptual metric that evaluates the similarity between two images based on deep features extracted from a pre-trained neural network. It is calculated using a model that is trained on a labeled dataset of human-judged perceptual similarity. A higher LPIPS score indicates lower perceptual similarity, while a lower score indicates higher perceptual similarity. The LPIPS metric is particularly useful for evaluating the quality of super-resolved images, as it aligns more closely with human perception compared to traditional metrics like PSNR and SSIM.
 
 ## 3. Proposed Solution
 
 > "It's super effective!" - *Pokémon*
 
-Recently, a technique called Hybrid Attention Transformer (HAT) was proposed on a paper called "Activating More Pixels in Image Super-Resolution Transformer", in 2023[]. This model is being widely tested for super resolution cases in image restoration[]. The idea is to bring the power of the HAT algorithm to benchmark it against the existing algorithms in the Super Resolution Gaming Dataset.
+Recently, a technique called Hybrid Attention Transformer (HAT) was proposed on a paper called "Activating More Pixels in Image Super-Resolution Transformer", in 2023[19]. This model is being widely tested for super resolution cases in image restoration[20, 21, 22]. The idea is to bring the power of the HAT algorithm to benchmark it against the existing algorithms in the Super Resolution Gaming Dataset.
 
-### Hybrid Attention Transformer (HAT)
+### 3.1. Hybrid Attention Transformer (HAT)
+
+The motivation of the authors behind the HAT technique was to leverage the power of transformers due to the great results they have been achieving in the last years, especially in the field of natural language processing. Alongside that, a wide range of transformer-based networks were already being proposed on the field of super resolution, and obtaining significant results due to the powerful representation abilities of the transformer[21]. The HAT model consists of three main parts: a shallow feature extraction part, a deep feature extraction part and an image reconstruction part. Figure 1 shows the architecture of the model.
+
+![HAT-Architecture](hat-architecture.png)*Figure 1 - Hybrid Attention Transformer's Architecture. Reference [19].*
+
+
+### 3.2. Understanding the architecture of the HAT
+
+#### 3.2.1. Shallow Feature Extraction
+
+This stage consists of a single convolutional layer that processes the input image to extract initial low-level features. The output of this layer is split into two paths:
+
+- One path is sent to the deep feature extraction module.
+- The other path bypasses deep processing and is directly used in the image reconstruction step via a residual connection (element-wise sum).
+
+#### 3.2.2. Deep Feature Extraction
+
+This stage is the core of the HAT model and consists of multiple Residual Hybrid Attention Groups (RHAGs), followed by a final convolutional layer. The RHAGs are designed to progressively refine features by capturing both short- and long-range dependencies.
+
+#### Residual Hybrid Attention Group (RHAG)
+
+Each RHAG contains a sequence of Hybrid Attention Blocks (HABs) followed by a single Overlapping Cross-Attention Block (OCAB). A final convolutional layer is applied at the end. The residual connection within RHAG helps preserve and integrate information from earlier layers.
+
+#### Hybrid Attention Block (HAB)
+
+The HAB is the fundamental unit of the network. It combines:
+
+- A Channel Attention Block (CAB) to model inter-channel relationships.
+- A Shifted Window Multi-Head Self-Attention (S-W-MSA) mechanism to capture spatial dependencies with reduced computational cost.
+
+Each HAB also includes Layer Normalization and a Multi-Layer Perceptron (MLP), and employs residual connections to facilitate training and gradient flow.
+
+#### Overlapping Cross-Attention Block (OCAB)
+
+The OCAB is designed to enhance feature interaction across spatial regions using Overlapping Cross Attention (OCA). This mechanism strengthens the model's ability to understand contextual information between neighboring regions. Similar to HAB, it includes normalization layers and an MLP.
+
+#### Channel Attention Block (CAB)
+
+The CAB focuses on learning inter-channel dependencies. It applies global pooling followed by convolutional transformations and a sigmoid activation to generate channel-wise attention weights, which are used to rescale feature maps adaptively.
+
+
+
+#### 3.2.3. Image Reconstruction
+
+In the final stage, the features from the shallow and deep branches are combined via element-wise addition. The resulting feature map passes through:
+
+- A convolutional layer.
+- A pixel shuffle operation (used for upscaling).
+- And another convolutional layer to reconstruct the high-resolution output image.
 
 ## 4. Expected Benefits
 
@@ -155,8 +212,22 @@ Finally, if time allows, we will also explore more basic algorithms, such as SRC
 
 [15]: Yue, Z., Wang, J., & Loy, C. C. (2023). "ResShift: Efficient Diffusion Model for Image Super-resolution by Residual Shifting". *arXiv preprint* arXiv:2307.12348. Available at: [Link](https://arxiv.org/abs/2307.12348). Accessed in 31/03/2025.
 
+[16]: Wikipedia: "Peak signal-to-noise ratio". Available at: [Link](https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio). Accessed on 01/04/2025.
 
-[]: Chen, X., Wang, X., Zhou, J., Qiao, Y., & Dong, C. (2023). "Activating More Pixels in Image Super-Resolution Transformer". *arXiv preprint* arXiv:2205.04437. Available at: [Link](https://arxiv.org/abs/2205.04437). Accessed in 31/03/2025.
+[17]: Wikipedia: "Structural similarity". Available at: [Link](https://en.wikipedia.org/wiki/Structural_similarity_index_measure). Accessed on 01/04/2025.
+
+[18]: Zhang, R., Isola, P., Efros, A. A., Shechtman, E., & Wang, O. (2018). "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric". In *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*. Accessed in 01/04/2025.
+
+[19]: Chen, X., Wang, X., Zhou, J., Qiao, Y., & Dong, C. (2023). "Activating More Pixels in Image Super-Resolution Transformer". *arXiv preprint* arXiv:2205.04437. Available at: [Link](https://arxiv.org/abs/2205.04437). Accessed in 01/04/2025.
+
+[20]: Papers With Code: "Urban100 Dataset". Available at: [Link](https://paperswithcode.com/dataset/urban100). Accessed in 01/04/2025.
+
+[21]: Papers With Code: "Manga109 Dataset". Available at: [Link](https://paperswithcode.com/dataset/manga109). Accessed in 01/04/2025.
+
+[22]: Papers With Code: "DIV2K Dataset". Available at: [Link](https://paperswithcode.com/dataset/div2k). Accessed in 01/04/2025.
+
+[23]: Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., & Polosukhin, I. (2017). "Attention Is All You Need". *arXiv preprint* arXiv:1706.03762. Available at: [Link](http://arxiv.org/abs/1706.03762). Accessed in 01/04/2025.
+
 
 ## Other resources used but not referenced
 

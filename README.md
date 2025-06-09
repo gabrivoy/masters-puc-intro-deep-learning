@@ -22,11 +22,11 @@ The work can be found in the `literature_review` folder: [Super Resolution in Vi
 
 ### Practical Implementation
 
-Due 16-jun-2025.
+The work can be found in the `implementation` folder: [Implementation Results](implementation/implementation_results.md).
 
 ### Final Presentation
 
-Due 16-jun-2025.
+Ongoing work, can be found in the `presentation` folder: [Final Presentation](presentation/presentation.md).
 
 ### Paper Ready for Submission
 

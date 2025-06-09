@@ -26,7 +26,7 @@ The work can be found in the `implementation` folder: [Implementation Results](i
 
 ### Final Presentation
 
-Ongoing work, can be found in the `presentation` folder: [Final Presentation](presentation/presentation.md).
+Can be found in the `presentation` folder: [Final Presentation](presentation/slides.pdf).
 
 ### Paper Ready for Submission
 

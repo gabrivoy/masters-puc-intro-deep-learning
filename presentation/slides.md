@@ -118,7 +118,27 @@ For evaluating the performance of the models, we used the following metrics:
 
 ---
 
-# Experiments and Results 🚨
+# Machine Setup 🚨
+
+<center>
+
+| Setup Config    | Value          |
+|-----------------|----------------|
+| OS              | Linux 6.1.123+ |
+| Processor       | x86_64         |
+| Python Version  | 3.11.13        |
+| Pytorch Version | 2.6.0+cu124    |
+| GPU             | Tesla T4       |
+| GPU Memory      | 16GB           |
+
+</center>
+
+---
+
+
+# Results - Quality 🚨
+
+<center>
 
 | Model            | PSNR         | SSIM       | LPIPS      | SRGD       |
 |------------------|--------------|------------|------------|------------|
@@ -128,6 +148,50 @@ For evaluating the performance of the models, we used the following metrics:
 | EMT              | 24.544       | **0.823**  | 0.388      | Yes        |
 | ResShift         | 23.036       | 0.799      | 0.482      | Yes        |
 | HAT              | 24.743       | 0.754      | **0.274**  | This Work  |
+
+</center>
+
+---
+
+# Results - Inference 🚨
+
+We also got results for the inference time (IT) of the models, which is important for real-time applications like video games.
+
+<center>
+
+| Model            | Mean IT (s) | SD IT (s)  |
+|------------------|-------------|------------|
+| SRCNN            | 0.00109332  | 0.01748104 |
+| HAT              | 2.27468708  | 0.07842106 |
+
+</center>
+
+The HAT model is much slower than SRCNN due to its complexity, which can limit its use in real-time scenarios where speed is crucial.
+
+---
+
+
+# Error Distribution - SRCNN 🚨
+
+![h:380 center](SRCNN-pdi.png)
+
+---
+
+# Error Distribution - Sharpened 🚨
+
+![h:380 center](SRCNN+Sharpen-pdi.png)
+
+---
+
+# Error Distribution - HAT 🚨
+
+![h:380 center](HAT-pdi.png)
+
+---
+
+# Distribution of Inference Times 🚨
+
+![h:450 center](inference_time_distribution.png)
 
 ---
 
@@ -139,6 +203,7 @@ For evaluating the performance of the models, we used the following metrics:
 
 ---
 
+
 # Conclusions and Future Work 📝
 
 <small>
@@ -148,7 +213,6 @@ For evaluating the performance of the models, we used the following metrics:
 - We added new information to the SRGD, with the SRCNN (+ Sharpen) and HAT models, which can be used in future works.
 - Training more time/epochs with more data and different hyperparameters could improve the results even further.
 - Engineering was a bottleneck in this work, since computer vision requires intense CPU/GPU and RAM usage, and datasets are large (50GB+).
-- Inference times could be measured, but we couldn't do that in this work.
 
 </small>
 
